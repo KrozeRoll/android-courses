@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="label">Weather</string>
+    <string name="_23_c">23°C</string>
+    <string name="city">Stavropol</string>
+    <string name="preception">Preception</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind_flow">Wind Flow</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thusrday">Thusrday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="monday">Monday</string>
+    <string name="_63">63%</string>
+    <string name="_45">45%</string>
+    <string name="_78">78%</string>
+    <string name="_20_c">20°C</string>
+    <string name="_18_c">18°C</string>
+</resources>
