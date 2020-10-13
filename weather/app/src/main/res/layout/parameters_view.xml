@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+
+
+        android:layout_marginTop="15dp"
+        android:background="@color/white"
+        tools:showIn="@layout/activity_main"
+        >
+        <TextView
+            android:id="@+id/value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Text.Gray.Number"
+            android:text="@string/_78"
+            android:gravity="center" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:src="@drawable/day_rain_thunder" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/Text.Gray.Description"
+            android:text="@string/wind_flow"
+            android:gravity="center" />
+    </android.widget.LinearLayout>
+
+
