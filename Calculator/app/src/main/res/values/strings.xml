@@ -4,6 +4,7 @@
     <string name="delButtonText"><![CDATA[<-]]></string>
     <string name="startString">0</string>
     <string name="errorMessage">Error</string>
+    <string name="copyMessage">Result was copied!</string>
     <string name="c">C</string>
     <string name="div">/</string>
     <string name="_7">7</string>

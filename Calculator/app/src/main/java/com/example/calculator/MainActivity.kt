@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             val myClip : ClipData;
             myClip = ClipData.newPlainText("label", lable.text);
             myClipboard.setPrimaryClip(myClip);
-            Toast.makeText(applicationContext, "Result copied!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.copyMessage), Toast.LENGTH_SHORT).show()
         }
 
         del.setOnClickListener {
