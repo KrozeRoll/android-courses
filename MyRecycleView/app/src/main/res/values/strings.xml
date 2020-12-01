@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Contacts list</string>
+    <string name="permissionErrorMessage">Need to have a permission</string>
+    <plurals name="loadMessage">
+        <item quantity="one">%d contact was found</item>
+        <item quantity="other">%d contacts was found</item>
+    </plurals>
+</resources>

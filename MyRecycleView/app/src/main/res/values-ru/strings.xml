@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Список контактов</string>
+    <string name="permissionErrorMessage">Требуется разрешение</string>
+    <plurals name="loadMessage">
+        <item quantity="one">Найден %d контакт.</item>
+        <item quantity="few">Найдено %d контакта.</item>
+        <item quantity="many">Найдено %d контактов.</item>
+    </plurals>
+</resources>
