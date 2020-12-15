@@ -3,8 +3,9 @@ package com.example.animation
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.Color.WHITE
 import android.graphics.Paint
 import android.os.Bundle
 import android.util.AttributeSet
@@ -14,21 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-//    class MyView : View {
-//        //View(context, attrs, defStyleAttr = 0, defStyleRes = 0)
-//        constructor(context: Context) : super(context)
-//        constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-//        constructor(context: Context, attrs: AttributeSet, defStyleAttr : Int = 0)
-//                : super(context, attrs, defStyleAttr)
-//        constructor(context: Context, attrs: AttributeSet, defStyleAttr : Int = 0, defStyleRes : Int = 0)
-//                : super(context, attrs, defStyleAttr, defStyleRes)
-//    }
-
     class MyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-    ) : View(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0
+    ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
         private val paint = Paint()
         private var angle : Float = 0F
@@ -36,10 +28,23 @@ class MainActivity : AppCompatActivity() {
         private var stage = 0
         private var bigDotRad : Float = 10F
         private var radiusShift : Float = 1F
+        private var rotationShift : Float = 7F
+        private val valueColor : Int
+
+        init {
+            val a: TypedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.MyView, defStyleAttr, defStyleRes)
+            try {
+                valueColor = a.getColor(R.styleable.MyView_valueColor, WHITE)
+                rotationShift = a.getFloat(R.styleable.MyView_rotateDuration, 7F)
+            } finally {
+                a.recycle()
+            }
+        }
 
         init {
             with(paint) {
-                color = Color.WHITE
+                color = valueColor
                 alpha = 255
                 textSize = 500F
                 isAntiAlias = true
@@ -60,9 +65,9 @@ class MainActivity : AppCompatActivity() {
                         drawCircle(3 * w / 4, 3 * h / 4, 10F, paint)
                         drawCircle(7 * w / 8, h / 2, 10F, paint)
                         clipRect(0F, 0F, w / 2, h)
-                        angle += 7
+                        angle += rotationShift
                         rotate(angle, w / 4, h / 2)
-                        if (angle >= 360F) {
+                        if (kotlin.math.abs(angle) >= 360F) {
                             angle = 0F
                             stage = (stage + 1) % 2
                         }
@@ -98,12 +103,6 @@ class MainActivity : AppCompatActivity() {
             invalidate()
         }
     }
-    //translate влево на пол вьюхи
-    //clip квардратика
-    //rotate
-    //restore
-    //translate right
-    //отрисовка кружочков
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

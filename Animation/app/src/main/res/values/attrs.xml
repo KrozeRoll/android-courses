@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="MyView">
-        <attr name="valueText" format="string"/>
         <attr name="valueColor" format="color"/>
-        <attr name="valueSize" format="dimension"/>
+        <attr name="rotateDuration" format="enum">
+            <enum name="left" value="-7"/>
+            <enum name="right" value="7"/>
+        </attr>
     </declare-styleable>
 </resources>
