@@ -8,6 +8,8 @@ import android.graphics.Canvas
 import android.graphics.Color.WHITE
 import android.graphics.Paint
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Animation
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         private var stage = 0
         private var bigDotRad : Float = 10F
         private var radiusShift : Float = 1F
-        private var rotationShift : Float = 7F
+        private var rotationShift : Float
         private val valueColor : Int
 
         init {
@@ -49,6 +51,61 @@ class MainActivity : AppCompatActivity() {
                 textSize = 500F
                 isAntiAlias = true
                 strokeWidth = 25F
+            }
+        }
+
+        public override fun onSaveInstanceState(): Parcelable? {
+            val savedState = SavedState(super.onSaveInstanceState())
+            savedState.angle = angle
+            savedState.dotsAngle = dotsAngle
+            savedState.stage = stage
+            savedState.bigDotRad = bigDotRad
+            return savedState
+        }
+
+        public override fun onRestoreInstanceState(state: Parcelable) {
+            if (state is SavedState) {
+                super.onRestoreInstanceState(state.superState)
+                angle = state.angle
+                dotsAngle = state.dotsAngle
+                stage = state.stage
+                bigDotRad = state.bigDotRad
+            } else {
+                super.onRestoreInstanceState(state)
+            }
+        }
+
+        internal class SavedState : BaseSavedState {
+            var angle : Float = 0F
+            var dotsAngle : Float = 0F
+            var stage = 0
+            var bigDotRad : Float = 10F
+
+            constructor (source : Parcel) : super(source) {
+                angle = source.readFloat()
+                dotsAngle = source.readFloat()
+                stage = source.readInt()
+                bigDotRad = source.readFloat()
+            }
+
+            constructor(superState: Parcelable?) : super(superState)
+
+            override fun writeToParcel(out: Parcel, flags: Int) {
+                super.writeToParcel(out, flags)
+                out.writeFloat(angle)
+                out.writeFloat(dotsAngle)
+                out.writeInt(stage)
+                out.writeFloat(bigDotRad)
+            }
+
+            companion object CREATOR : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(parcel: Parcel): SavedState {
+                    return SavedState(parcel)
+                }
+
+                override fun newArray(size: Int): Array<SavedState?> {
+                    return arrayOfNulls(size)
+                }
             }
         }
 

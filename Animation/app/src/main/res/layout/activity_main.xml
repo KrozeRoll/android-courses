@@ -8,6 +8,7 @@
     android:background="@color/colorGray">
 
     <view class="com.example.animation.MainActivity$MyView"
+        android:id="@+id/animation"
         android:layout_width="100dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toTopOf="@+id/message"
