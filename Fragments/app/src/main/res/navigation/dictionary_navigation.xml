@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dictionary_navigation"
+    app:startDestination="@id/dictionaryFragment">
+
+    <fragment
+        android:id="@+id/dictionaryFragment"
+        android:name="com.example.fragments.fragments.DictionaryFragment"
+        android:label="DictionaryFragment"
+        tools:layout="@layout/fragment_dictionary">
+        <action
+            android:id="@+id/action_dictionaryFragment_to_dictionaryFragment1"
+            app:destination="@id/dictionaryFragment1" />
+    </fragment>
+    <fragment
+        android:id="@+id/dictionaryFragment1"
+        android:name="com.example.fragments.fragments.DictionaryFragment1"
+        android:label="DictionaryFragment1"
+        tools:layout="@layout/fragment_dictionary1" >
+        <argument
+            android:name="count"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_dictionaryFragment1_to_dictionaryFragment2"
+            app:destination="@id/dictionaryFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/dictionaryFragment2"
+        android:name="com.example.fragments.fragments.DictionaryFragment2"
+        android:label="DictionaryFragment2"
+        tools:layout="@layout/fragment_dictionary2">
+        <argument
+            android:name="count"
+            app:argType="integer" />
+    </fragment>
+</navigation>
