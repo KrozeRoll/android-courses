@@ -2,9 +2,7 @@
 <resources>
     <declare-styleable name="MyView">
         <attr name="valueColor" format="color"/>
-        <attr name="rotateDuration" format="enum">
-            <enum name="left" value="-7"/>
-            <enum name="right" value="7"/>
-        </attr>
+        <attr name="rotationDuration" format="integer"/>
+        <attr name="dotDuration" format="integer"/>
     </declare-styleable>
 </resources>

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.min
 
 class MainActivity : AppCompatActivity() {
     class MyView @JvmOverloads constructor(
@@ -29,8 +30,8 @@ class MainActivity : AppCompatActivity() {
         private var dotsAngle : Float = 0F
         private var stage = 0
         private var bigDotRad : Float = 10F
-        private var radiusShift : Float = 1F
         private var rotationShift : Float
+        private var dotShift : Float
         private val valueColor : Int
 
         init {
@@ -38,7 +39,8 @@ class MainActivity : AppCompatActivity() {
                 attrs, R.styleable.MyView, defStyleAttr, defStyleRes)
             try {
                 valueColor = a.getColor(R.styleable.MyView_valueColor, WHITE)
-                rotationShift = a.getFloat(R.styleable.MyView_rotateDuration, 7F)
+                rotationShift = 360 / (a.getFloat(R.styleable.MyView_rotationDuration, 1000F) / 16)
+                dotShift = 80 / (a.getFloat(R.styleable.MyView_dotDuration, 2000F) / 16)
             } finally {
                 a.recycle()
             }
@@ -122,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                         drawCircle(3 * w / 4, 3 * h / 4, 10F, paint)
                         drawCircle(7 * w / 8, h / 2, 10F, paint)
                         clipRect(0F, 0F, w / 2, h)
-                        angle += rotationShift
+                        angle = min(360F, angle + rotationShift)
                         rotate(angle, w / 4, h / 2)
                         if (kotlin.math.abs(angle) >= 360F) {
                             angle = 0F
@@ -140,12 +142,12 @@ class MainActivity : AppCompatActivity() {
                         drawCircle(5 * w / 8, h / 2, 10F, paint)
                         drawCircle(3 * w / 4, 3 * h / 4, 10F, paint)
                         drawCircle(7 * w / 8, h / 2, 10F, paint)
-                        bigDotRad += radiusShift
+                        bigDotRad = min(20F, bigDotRad + dotShift)
                         if (bigDotRad >= 20) {
-                            radiusShift = -1F
-                        } else if (bigDotRad == 10F) {
+                            dotShift *= -1
+                        } else if (bigDotRad <= 10F) {
                             dotsAngle += 90
-                            radiusShift = 1F
+                            dotShift *= -1
                         }
                         if (dotsAngle == 360F) {
                             dotsAngle = 0F
