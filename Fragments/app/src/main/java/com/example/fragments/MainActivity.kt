@@ -2,9 +2,12 @@ package com.example.fragments
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import com.example.fragments.extension.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,6 +18,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setupBottomNavigation()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -22,12 +29,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val navGraphIds = listOf(
             R.navigation.home_navigation,
             R.navigation.dictionary_navigation,
             R.navigation.chat_navigation
         )
-        val controller = bottom_navigation.setupWithNavController(
+        val controller = bottomNavigationView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
             containerId = R.id.my_nav_host_fragment,
