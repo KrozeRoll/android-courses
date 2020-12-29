@@ -33,4 +33,9 @@ class HomeFragment1 : Fragment() {
         newString += fragmentNumber.toString()
         homeText1.text = newString
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

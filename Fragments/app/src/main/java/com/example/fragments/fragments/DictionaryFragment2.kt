@@ -27,4 +27,9 @@ class DictionaryFragment2 : Fragment() {
         newString += fragmentNumber.toString()
         dictionaryText2.text = newString
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

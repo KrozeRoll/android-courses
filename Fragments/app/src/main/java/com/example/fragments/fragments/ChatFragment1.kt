@@ -34,4 +34,9 @@ class ChatFragment1 : Fragment() {
         newString += fragmentNumber.toString()
         chatText1.text = newString
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

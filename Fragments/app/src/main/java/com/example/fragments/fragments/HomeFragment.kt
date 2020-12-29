@@ -25,4 +25,9 @@ class HomeFragment : Fragment() {
             navigate(HomeFragmentDirections.actionHomeFragmentToHomeFragment1(1))
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

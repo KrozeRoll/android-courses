@@ -25,4 +25,9 @@ class DictionaryFragment : Fragment() {
             navigate(DictionaryFragmentDirections.actionDictionaryFragmentToDictionaryFragment1(1))
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

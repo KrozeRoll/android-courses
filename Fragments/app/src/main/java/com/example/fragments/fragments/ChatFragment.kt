@@ -25,4 +25,9 @@ class ChatFragment : Fragment() {
             navigate(ChatFragmentDirections.actionChatFragmentToChatFragment1(1))
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 }

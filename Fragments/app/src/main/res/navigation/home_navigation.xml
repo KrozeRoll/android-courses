@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_homeFragment1"
-            app:destination="@id/homeFragment1" />
+            app:destination="@id/homeFragment1"
+            app:enterAnim="@anim/in_right"
+            app:exitAnim="@anim/out_left"
+            app:popEnterAnim="@anim/in_left"
+            app:popExitAnim="@anim/out_right" />
     </fragment>
 
     <fragment
@@ -25,7 +29,11 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_homeFragment1_to_homeFragment2"
-            app:destination="@id/homeFragment2" />
+            app:destination="@id/homeFragment2"
+            app:enterAnim="@anim/in_right"
+            app:exitAnim="@anim/out_left"
+            app:popEnterAnim="@anim/in_left"
+            app:popExitAnim="@anim/out_right" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment2"

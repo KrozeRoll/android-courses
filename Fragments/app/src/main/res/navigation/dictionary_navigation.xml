@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_dictionary">
         <action
             android:id="@+id/action_dictionaryFragment_to_dictionaryFragment1"
-            app:destination="@id/dictionaryFragment1" />
+            app:destination="@id/dictionaryFragment1"
+            app:enterAnim="@anim/in_right"
+            app:exitAnim="@anim/out_left"
+            app:popEnterAnim="@anim/in_left"
+            app:popExitAnim="@anim/out_right" />
     </fragment>
     <fragment
         android:id="@+id/dictionaryFragment1"
@@ -24,7 +28,11 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_dictionaryFragment1_to_dictionaryFragment2"
-            app:destination="@id/dictionaryFragment2" />
+            app:destination="@id/dictionaryFragment2"
+            app:enterAnim="@anim/in_right"
+            app:exitAnim="@anim/out_left"
+            app:popEnterAnim="@anim/in_left"
+            app:popExitAnim="@anim/out_right" />
     </fragment>
     <fragment
         android:id="@+id/dictionaryFragment2"
