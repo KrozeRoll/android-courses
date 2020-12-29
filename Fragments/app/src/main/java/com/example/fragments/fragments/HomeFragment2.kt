@@ -30,6 +30,6 @@ class HomeFragment2 : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true;
+        retainInstance = true
     }
 }
