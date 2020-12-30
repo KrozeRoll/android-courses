@@ -9,8 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class UserAdapterTest {
-    @Mock val list1 : List<Contact> = listOf(Contact("a", "1"))
-    @Mock val list2 : List<Contact> = listOf(
+    val list1 : List<Contact> = listOf(Contact("a", "1"))
+    val list2 = listOf(
         Contact("a", "1"),
         Contact("b", "2"))
 
@@ -25,12 +25,13 @@ class UserAdapterTest {
         assertEquals(1, userAdapter.itemCount)
     }
 
-    @Before
+
     fun setUpList2() {
         userAdapter = UserAdapter(list2, {})
     }
     @Test
     fun getItemCount2() {
+        val userAdapter = UserAdapter(list2, {})
         assertEquals(2, userAdapter.itemCount)
     }
 
