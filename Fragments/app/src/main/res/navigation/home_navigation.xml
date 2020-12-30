@@ -11,38 +11,16 @@
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_homeFragment_to_homeFragment1"
-            app:destination="@id/homeFragment1"
-            app:enterAnim="@anim/in_right"
-            app:exitAnim="@anim/out_left"
-            app:popEnterAnim="@anim/in_left"
-            app:popExitAnim="@anim/out_right" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/homeFragment1"
-        android:name="com.example.fragments.fragments.HomeFragment1"
-        android:label="HomeFragment1"
-        tools:layout="@layout/fragment_home1">
+            android:id="@+id/action_homeFragment_self"
+            app:destination="@id/homeFragment" >
+            <argument
+                android:name="count"
+                android:defaultValue="0" />
+        </action>
         <argument
             android:name="count"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_homeFragment1_to_homeFragment2"
-            app:destination="@id/homeFragment2"
-            app:enterAnim="@anim/in_right"
-            app:exitAnim="@anim/out_left"
-            app:popEnterAnim="@anim/in_left"
-            app:popExitAnim="@anim/out_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/homeFragment2"
-        android:name="com.example.fragments.fragments.HomeFragment2"
-        android:label="HomeFragment2"
-        tools:layout="@layout/fragment_home2">
-        <argument
-        android:name="count"
-        app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
 </navigation>

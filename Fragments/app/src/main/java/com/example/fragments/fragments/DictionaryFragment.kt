@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.fragments.R
 import com.example.fragments.extension.navigate
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_dictionary.*
 
 class DictionaryFragment : Fragment() {
+    var fragmentNumber = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -20,9 +23,17 @@ class DictionaryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dictionaryText.text = "0"
+
+        fragmentNumber = DictionaryFragmentArgs.fromBundle(requireArguments()).count
+        var newString = ""
+        for (number in 0 until fragmentNumber) {
+            newString += "$number -> "
+        }
+        newString += fragmentNumber.toString()
+        dictionaryText.text = newString
+
         dictionaryButton.setOnClickListener {
-            navigate(DictionaryFragmentDirections.actionDictionaryFragmentToDictionaryFragment1(1))
+            navigate(DictionaryFragmentDirections.actionDictionaryFragmentSelf(fragmentNumber + 1))
         }
     }
 

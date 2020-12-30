@@ -11,36 +11,13 @@
         android:label="ChatFragment"
         tools:layout="@layout/fragment_chat" >
         <action
-            android:id="@+id/action_chatFragment_to_chatFragment1"
-            app:destination="@id/chatFragment1"
-            app:enterAnim="@anim/in_right"
-            app:exitAnim="@anim/out_left"
-            app:popEnterAnim="@anim/in_left"
-            app:popExitAnim="@anim/out_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/chatFragment1"
-        android:name="com.example.fragments.fragments.ChatFragment1"
-        android:label="ChatFragment1"
-        tools:layout="@layout/fragment_chat1" >
-        <argument
-            android:name="count"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_chatFragment1_to_chatFragment2"
-            app:destination="@id/chatFragment2"
-            app:enterAnim="@anim/in_right"
-            app:exitAnim="@anim/out_left"
-            app:popEnterAnim="@anim/in_left"
-            app:popExitAnim="@anim/out_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/chatFragment2"
-        android:name="com.example.fragments.fragments.ChatFragment2"
-        android:label="ChatFragment2"
-        tools:layout="@layout/fragment_chat2">
+            android:id="@+id/action_chatFragment_self"
+            app:destination="@id/chatFragment" />
         <argument
             android:name="count"
             app:argType="integer" />
     </fragment>
+    <argument
+        android:name="count"
+        android:defaultValue="0" />
 </navigation>
