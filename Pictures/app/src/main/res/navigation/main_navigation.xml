@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/recyclerFragment">
+
+    <fragment
+        android:id="@+id/imageFragment"
+        android:name="com.example.pictures.ImageFragment"
+        android:label="ImageFragment" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/recyclerFragment"
+        android:name="com.example.pictures.RecyclerFragment"
+        android:label="RecyclerFragment" >
+        <action
+            android:id="@+id/action_recyclerFragment_to_imageFragment"
+            app:destination="@id/imageFragment" />
+    </fragment>
+</navigation>

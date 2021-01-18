@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_chat" >
         <action
             android:id="@+id/action_chatFragment_self"
-            app:destination="@id/chatFragment" />
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/in_right" />
         <argument
             android:name="count"
             app:argType="integer" />
