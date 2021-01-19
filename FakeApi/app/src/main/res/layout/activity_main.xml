@@ -28,6 +28,7 @@
         app:layout_constraintBottom_toBottomOf="@id/myRecyclerView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

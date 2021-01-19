@@ -2,10 +2,6 @@ package com.example.fakeapi
 
 import android.app.Application
 import android.util.Log
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.IOException
 
 class MyApp : Application() {
     lateinit var apiService : APIService
