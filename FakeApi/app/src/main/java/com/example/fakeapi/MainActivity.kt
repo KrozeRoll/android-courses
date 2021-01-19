@@ -1,70 +1,45 @@
 package com.example.fakeapi
 
+import android.content.BroadcastReceiver
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.list_item.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.IOException
-import java.lang.Exception
-import java.net.SocketTimeoutException
+import java.util.*
 
 @Parcelize
-data class Post(val id : Int, val title: String, val body: String, val userId : Int) : Parcelable
+@Entity
+data class Post(val id : Int, val title: String, val body: String, val userId : Int,
+                @PrimaryKey(autoGenerate = true) val hshId : Int = 0)
+    : Parcelable
 
 data class PostBody(val title : String, val body : String, val userId : Int)
 
 class PostAdapter(
-    private val posts: List<Post>
-): RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
-    class PostViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
+    private val posts: MutableList<Post>,
+    private val onClick : (Post) -> Unit
+) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+    class PostViewHolder(val root: View) : RecyclerView.ViewHolder(root) {
         var call : Call<ResponseBody>? = null
         fun bind(post: Post) {
             with(root) {
                 titleTextView.text = post.title
                 bodyTextView.text = post.body
-                deleteButton.setOnClickListener {
-                    val currentId = post.id
-                    call = MyApp.instance.apiService.deletePost(currentId)
-                    call?.enqueue(object : Callback<ResponseBody> {
-                        override fun onResponse(
-                            call: Call<ResponseBody>,
-                            response: Response<ResponseBody>
-                        ) {
-                            Log.d(
-                                "APIService/Get",
-                                "Finished with ${response.code()}, body: ${response.body()}"
-                            )
-                            if (response.isSuccessful) {
-                                MainActivity.makeToast("Post $currentId deleted", context)
-                            } else {
-                                MainActivity.makeProblemMessage(response.code(), context)
-                            }
-
-                        }
-
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Log.d(
-                                "APIService/Delete",
-                                "$t happened"
-                            )
-                            MainActivity.makeExceptionMessage(t, context)
-                        }
-                    })
-                }
             }
         }
     }
@@ -76,112 +51,139 @@ class PostAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        return PostViewHolder(
+        val holder = PostViewHolder(
             LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.list_item, parent, false)
         )
+        holder.root.deleteButton.setOnClickListener {
+            onClick(posts[holder.adapterPosition])
+            posts.removeAt(holder.adapterPosition)
+            notifyDataSetChanged()
+        }
+        return holder
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) = holder.bind(posts[position])
 
     override fun getItemCount(): Int = posts.size
 
+    fun addPost(post : Post) {
+        posts.add(post)
+        notifyDataSetChanged()
+    }
 }
 
 class MainActivity : AppCompatActivity() {
-    lateinit var postList : ArrayList<Post>
-    private var getCall : Call<List<Post>>? = null
-    private var addCall : Call<Post>? = null
+    lateinit var postList : MutableList<Post>
+    private var broadcastReceiver : BroadcastReceiver? = null
+    var postAdapter : PostAdapter? = null
 
-    private fun makeRecycleView(contactsList : ArrayList<Post>) {
+    private fun makeRecycleView(contactsList : MutableList<Post>) {
         val viewManager = LinearLayoutManager(this@MainActivity)
+        postAdapter = PostAdapter(contactsList) {
+            deletePost(it)
+        }
         myRecyclerView.apply {
             layoutManager = viewManager
-            adapter = PostAdapter(contactsList)
+            adapter = postAdapter
         }
+        addButton.visibility = View.VISIBLE
+        refreshButton.visibility = View.VISIBLE
+        progressBar.visibility = View.INVISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            progressBar.visibility = View.VISIBLE
-            getCall = MyApp.instance.apiService.listPosts()
-            getCall?.enqueue(object : Callback<List<Post>> {
-                override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
-                    Log.d(
-                        "APIService/Get",
-                        "Finished with ${response.code()}, body: ${response.body()?.size}"
-                    )
-                    if (response.isSuccessful) {
-                        postList = ArrayList(response.body()!!)
-                        makeRecycleView(postList)
-                        progressBar.visibility = View.INVISIBLE
-                        addButton.visibility = View.VISIBLE
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val operation = intent?.getStringExtra("operation")
+                if (operation == "post") {
+                    val resultCode = intent.getIntExtra("resultCode", 0)
+                    val post = intent.getParcelableExtra<Post>("post")
+                    if (resultCode != 0) {
+                        makeToast("API error", this@MainActivity)
                     } else {
-                        makeProblemMessage(response.code(), this@MainActivity)
+                        makeToast("Posted $post", this@MainActivity)
+                    }
+                    if (post != null) {
+                        postAdapter?.addPost(post)
+                    }
+                } else if (operation == "delete") {
+                    val message = intent.getStringExtra("message")
+                    makeToast(message.toString(), this@MainActivity)
+                } else if (operation == "upload") {
+                    val executed = intent.getBooleanExtra("has_list", false)
+                    if (!executed) {
+                        makeToast("Connection problem, try again", this@MainActivity)
+                        progressBar.visibility = View.INVISIBLE
+                    } else {
+                        makeToast("List uploaded", this@MainActivity)
+                        postList = intent.getParcelableArrayListExtra("list")!!
+                        makeRecycleView(postList)
                     }
                 }
+            }
+        }
+        registerReceiver(broadcastReceiver, IntentFilter("response").apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+        })
 
-                override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                    Log.d(
-                        "APIService/Get",
-                        "$t happened"
-                    )
-                    makeExceptionMessage(t, this@MainActivity)
-                    progressBar.visibility = View.INVISIBLE
-                }
-            })
+        if (savedInstanceState == null) {
+            uploadList()
+            progressBar.visibility = View.VISIBLE
+        } else {
+            postList = savedInstanceState.getParcelableArrayList("postList")!!
+            makeRecycleView(postList)
         }
 
         addButton.setOnClickListener {
             val newPost = PostBody("NewPost", "It's a post", 1)
-            addCall = MyApp.instance.apiService.postPost(newPost)
-            addCall?.enqueue(object : Callback<Post> {
-                override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                    Log.d(
-                        "APIService/Post",
-                        "Finished with ${response.code()}, body: ${response.body()?.id}"
-                    )
-                    if (response.isSuccessful) {
-                        makeToast("Post added: ${response.body()}", this@MainActivity)
-                    } else {
-                        makeProblemMessage(response.code(), this@MainActivity)
-                    }
-                }
-
-                override fun onFailure(call: Call<Post>, t: Throwable) {
-                    Log.d(
-                        "APIService/Post",
-                        "$t happened"
-                    )
-                    makeExceptionMessage(t, this@MainActivity)
-                }
-            })
+            postPost(newPost)
         }
 
+        refreshButton.setOnClickListener {
+            uploadList()
+        }
+    }
+
+    private fun uploadList() {
+        val serviceIntent = Intent(this@MainActivity, MyService::class.java)
+        serviceIntent.putExtra("operation", "upload")
+        startService(serviceIntent)
+    }
+
+    private fun deletePost(post : Post) {
+        val serviceIntent = Intent(this@MainActivity, MyService::class.java)
+        with (serviceIntent) {
+            putExtra("operation", "delete")
+            putExtra("post", post)
+        }
+        startService(serviceIntent)
+    }
+
+    private fun postPost(post : PostBody) {
+        val serviceIntent = Intent(this@MainActivity, MyService::class.java)
+        with (serviceIntent) {
+            putExtra("operation", "post")
+            putExtra("title", post.title)
+            putExtra("body", post.body)
+        }
+        startService(serviceIntent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList("POST_LIST", postList)
+        outState.putParcelableArrayList("postList", postList as ArrayList<out Parcelable>)
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        postList = savedInstanceState.getParcelableArrayList("POST_LIST")!!
-        makeRecycleView(postList)
-        addButton.visibility = View.VISIBLE
+        postList = savedInstanceState.getParcelableArrayList("postList")!!
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        addCall?.cancel()
-        addCall = null
-        getCall?.cancel()
-        getCall = null
-    }
 
     companion object {
         fun makeToast(msg : String, context : Context) {
@@ -192,31 +194,6 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
-        fun makeExceptionMessage(t : Throwable, context : Context) {
-            try {
-                throw t
-            } catch (e : SocketTimeoutException) {
-                makeToast("Timeout exceeded, try again", context)
-            } catch (e : IOException) {
-                makeToast("Load canceled", context)
-            } catch (e : Exception) {
-                makeToast(e.localizedMessage ?: "Unknown error", context)
-            }
-        }
-
-        fun makeProblemMessage(code : Int, context: Context) {
-            when (code) {
-                in 300..399 -> {
-                    makeToast("Error: Resourse moved", context)
-                }
-                in 400..499 -> {
-                    makeToast("Error: Bad request", context)
-                }
-                in 500..599 -> {
-                    makeToast("Error: Server error", context)
-                }
-            }
-        }
     }
 
 }
