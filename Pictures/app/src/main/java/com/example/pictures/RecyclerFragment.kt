@@ -1,6 +1,5 @@
 package com.example.pictures
 
-import android.app.Activity
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pictures.extension.navigate
@@ -64,27 +62,29 @@ class RecyclerFragment : Fragment() {
         myRecyclerView.apply {
             layoutManager = viewManager
             adapter = UserAdapter(pictureList) {
-                showPicture(it.download_url);
+                showPicture(it.download_url)
             }
         }
     }
 
-    class MyDownloadAsyncTask : AsyncTask<String, Unit, List<PictureInfo>>() {
+    class MyDownloadAsyncTask(service : RecyclerFragment) : AsyncTask<String, Unit, List<PictureInfo>>() {
+        private val serviceRef = WeakReference(service)
+
         override fun doInBackground(vararg params: String?): List<PictureInfo> {
             val result = URL(params[0]).openConnection()
                 .getInputStream()
                 .bufferedReader().readLine()
             val pictures = Gson().fromJson(result, Array<PictureInfo>::class.java)
 
-            Log.d("ASYNC_TASK", pictures.size.toString());
-            return pictures.asList();
+            Log.d("ASYNC_TASK", pictures.size.toString())
+            return pictures.asList()
         }
 
         override fun onPostExecute(result: List<PictureInfo>) {
             Log.d("ASYNC_TASK", "po krasote result")
-
-            pictures = result
-            makeRecycleView(result)
+            val service = serviceRef.get()
+            service?.pictures = result
+            service?.makeRecycleView(result)
         }
     }
 
@@ -93,12 +93,7 @@ class RecyclerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("BEDA", "onCreateView")
-        Log.d("BEDA", "picture = " + pictures.toString())
-
-        val view = inflater.inflate(R.layout.recycler_fragment, container, false)
-
-        return view
+        return inflater.inflate(R.layout.recycler_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,9 +103,8 @@ class RecyclerFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("BEDA", "onCreate")
         super.onCreate(savedInstanceState)
         retainInstance = true
-        MyDownloadAsyncTask().execute("https://picsum.photos/v2/list?limit=50")
+        MyDownloadAsyncTask(this).execute("https://picsum.photos/v2/list?limit=50")
     }
 }

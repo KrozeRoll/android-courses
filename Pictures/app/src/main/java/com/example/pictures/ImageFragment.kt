@@ -1,27 +1,23 @@
 package com.example.pictures
 
-import android.graphics.Bitmap
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.image_fragment.*
-import java.io.InputStream
-import java.net.URL
 
 
 class ImageFragment : Fragment() {
-    var url : String = ""
-    var imageBitmap : Bitmap? = null
+    private var url : String = ""
+    private var broadcastReceiver : BroadcastReceiver? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,50 +27,43 @@ class ImageFragment : Fragment() {
         return inflater.inflate(R.layout.image_fragment, container, false)
     }
 
-    class PictureAsyncTask : AsyncTask<String, Unit, Bitmap?>() {
-        override fun doInBackground(vararg params: String?): Bitmap? {
-            Log.d("ASYNC_TASK", params[0].toString())
-            if (!isCancelled()) {
-                val input: InputStream = URL(params[0] ?: "").openStream()
-                val image = BitmapFactory.decodeStream(input)
-                return image
-            } else {
-                return null
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        override fun onPostExecute(result: Bitmap?) {
-            Log.d("ASYNC_TASK", "po krasote result")
-            imageBitmap = result
-            image?.setImageBitmap(result)
-            progressBar?.visibility = ProgressBar.INVISIBLE
-        }
-
-        override fun onCancelled() {
-            Log.d("ASYNC_TASK", "canceled")
-            super.onCancelled()
+        backButton.setOnClickListener {
+            Log.d("ImageFragment", "onDestroyWithButton")
+            findNavController().navigateUp()
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        url = ImageFragmentArgs.fromBundle(requireArguments()).url
-
-        val myTask = PictureAsyncTask()
-        if (savedInstanceState == null) {
-            myTask.execute(url)
-        } else {
-            image.setImageBitmap(imageBitmap)
-        }
-
-        backButton.setOnClickListener {
-            findNavController().navigateUp()
-            myTask.cancel(true)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("ImageFragment", "onDestroy")
+        activity?.unregisterReceiver(broadcastReceiver)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
+
+        url = ImageFragmentArgs.fromBundle(requireArguments()).url
+
+        val serviceIntent = Intent(context, MyService::class.java)
+            .putExtra("url", url)
+        activity?.startService(serviceIntent)
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, intent: Intent?) {
+                val byteArray = intent?.getByteArrayExtra("image")
+                if (byteArray != null) {
+                    val byteImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                    image.setImageBitmap(byteImage)
+                    progressBar.visibility = View.INVISIBLE
+                }
+            }
+        }
+
+        activity?.registerReceiver(broadcastReceiver, IntentFilter("RESPONSE").apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+        })
     }
 }
