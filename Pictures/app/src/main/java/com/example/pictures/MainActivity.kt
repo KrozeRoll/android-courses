@@ -1,5 +1,6 @@
 package com.example.pictures
 
+import android.content.AsyncTaskLoader
 import android.content.Intent
 import android.media.Image
 import android.net.Uri
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    override fun onSupportNavigateUp()
-            = findNavController(R.id.nav_host_fragment).navigateUp()
+    override fun onSupportNavigateUp() : Boolean {
+        return findNavController(R.id.nav_host_fragment).navigateUp()
+    }
 }

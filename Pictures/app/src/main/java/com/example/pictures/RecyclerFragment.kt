@@ -1,5 +1,6 @@
 package com.example.pictures
 
+import android.app.Activity
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import com.example.pictures.extension.navigate
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.list_item.view.*
 import kotlinx.android.synthetic.main.recycler_fragment.*
+import java.lang.ref.WeakReference
 import java.net.URL
 
 class RecyclerFragment : Fragment() {
@@ -67,7 +69,7 @@ class RecyclerFragment : Fragment() {
         }
     }
 
-    inner class MyDownloadAsyncTask : AsyncTask<String, Unit, List<PictureInfo>>() {
+    class MyDownloadAsyncTask : AsyncTask<String, Unit, List<PictureInfo>>() {
         override fun doInBackground(vararg params: String?): List<PictureInfo> {
             val result = URL(params[0]).openConnection()
                 .getInputStream()
@@ -80,6 +82,7 @@ class RecyclerFragment : Fragment() {
 
         override fun onPostExecute(result: List<PictureInfo>) {
             Log.d("ASYNC_TASK", "po krasote result")
+
             pictures = result
             makeRecycleView(result)
         }

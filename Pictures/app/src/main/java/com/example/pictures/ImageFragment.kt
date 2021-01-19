@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
@@ -30,33 +31,45 @@ class ImageFragment : Fragment() {
         return inflater.inflate(R.layout.image_fragment, container, false)
     }
 
-    inner class PictureAsyncTask : AsyncTask<String, Unit, Bitmap>() {
-        override fun doInBackground(vararg params: String?): Bitmap {
+    class PictureAsyncTask : AsyncTask<String, Unit, Bitmap?>() {
+        override fun doInBackground(vararg params: String?): Bitmap? {
             Log.d("ASYNC_TASK", params[0].toString())
-            val input : InputStream = URL(params[0] ?: "").openStream()
-            val image = BitmapFactory.decodeStream(input)
-            return image
+            if (!isCancelled()) {
+                val input: InputStream = URL(params[0] ?: "").openStream()
+                val image = BitmapFactory.decodeStream(input)
+                return image
+            } else {
+                return null
+            }
         }
 
-        override fun onPostExecute(result: Bitmap) {
+        override fun onPostExecute(result: Bitmap?) {
             Log.d("ASYNC_TASK", "po krasote result")
             imageBitmap = result
-            image.setImageBitmap(result)
+            image?.setImageBitmap(result)
+            progressBar?.visibility = ProgressBar.INVISIBLE
+        }
+
+        override fun onCancelled() {
+            Log.d("ASYNC_TASK", "canceled")
+            super.onCancelled()
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         url = ImageFragmentArgs.fromBundle(requireArguments()).url
+
+        val myTask = PictureAsyncTask()
         if (savedInstanceState == null) {
-            PictureAsyncTask().execute(url)
+            myTask.execute(url)
         } else {
             image.setImageBitmap(imageBitmap)
         }
 
         backButton.setOnClickListener {
             findNavController().navigateUp()
+            myTask.cancel(true)
         }
     }
 
