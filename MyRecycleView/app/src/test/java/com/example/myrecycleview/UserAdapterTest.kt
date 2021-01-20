@@ -1,38 +1,62 @@
 package com.example.myrecycleview
 
-import org.junit.Assert.*
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+
 
 @RunWith(MockitoJUnitRunner::class)
 class UserAdapterTest {
-    val list1 : List<Contact> = listOf(Contact("a", "1"))
-    val list2 = listOf(
+    private val list1 = mutableListOf(Contact("a", "1"))
+    private val list2 = mutableListOf(
         Contact("a", "1"),
-        Contact("b", "2"))
+        Contact("b", "2")
+    )
+    private val list3 = mutableListOf(
+        Contact("a", "1"),
+        Contact("b", "2"),
+        Contact("aa", "3")
+    )
 
-    lateinit var userAdapter : UserAdapter
+    private lateinit var userAdapter : UserAdapter
 
-    @Before
-    fun setUpList1() {
-        userAdapter = UserAdapter(list1, {})
+    private fun getItemCountTest(list: MutableList<Contact>, result : Int) {
+        userAdapter = UserAdapter(list) {}
+        assertEquals(result, userAdapter.itemCount)
     }
+
+    private fun filterAndTest(text: String, list: MutableList<Contact>, resultList: List<Contact>) {
+        val newList = list.toMutableList()
+        userAdapter = UserAdapter(newList) {}
+        userAdapter.filter(text)
+        assertEquals(resultList, userAdapter.contacts)
+    }
+
     @Test
-    fun getItemCount1() {
-        assertEquals(1, userAdapter.itemCount)
+    fun testFilter() {
+        filterAndTest("a", list1, mutableListOf(Contact("a", "1")))
+        filterAndTest("b", list1, mutableListOf())
+
+        filterAndTest("b", list2, mutableListOf(Contact("b", "2")))
+        filterAndTest("a", list2, mutableListOf(Contact("a", "1")))
+        filterAndTest("2", list2, mutableListOf(Contact("b", "2")))
+        filterAndTest("1", list2, mutableListOf(Contact("a", "1")))
+        filterAndTest("A", list2, mutableListOf(Contact("a", "1")))
+        filterAndTest("B", list2, mutableListOf(Contact("b", "2")))
+
+        filterAndTest("a", list3, mutableListOf(
+            Contact("a", "1"),
+            Contact("aa", "3")))
     }
 
-
-    fun setUpList2() {
-        userAdapter = UserAdapter(list2, {})
-    }
     @Test
-    fun getItemCount2() {
-        val userAdapter = UserAdapter(list2, {})
-        assertEquals(2, userAdapter.itemCount)
+    fun getItemCount() {
+        getItemCountTest(mutableListOf(), 0)
+
+        getItemCountTest(list1, 1)
+        getItemCountTest(list2, 2)
+        getItemCountTest(list3, 3)
     }
 
 }
