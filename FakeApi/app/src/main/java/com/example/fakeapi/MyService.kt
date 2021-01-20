@@ -4,9 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -85,16 +83,18 @@ class MyService : Service() {
                 if (response.isSuccessful) {
                     saveDeleteAnswer("Deleted $response", post)
                 } else {
-                    saveDeleteAnswer("Connection problem, try again", post)
+                    saveDeleteAnswer("Server connection problem", post)
                 }
             }
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                saveDeleteAnswer("Connection problem, try again", post)
+                saveDeleteAnswer("Server connection problem", post)
             }
         })
     }
 
     private fun saveUploadAnswer(resList: List<Post>?) {
+        val postDao = MyApp.instance.dataBase.postDao()
+
         val list = resList as MutableList<Post>?
         if (list == null) {
             sendBroadcast(Intent().apply {
@@ -126,7 +126,16 @@ class MyService : Service() {
             }
 
             override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                saveUploadAnswer(list)
+                uploadListFromDao()
+            }
+
+
+            private fun uploadListFromDao() {
+                val postDao = MyApp.instance.dataBase.postDao()
+                GlobalScope.async(Dispatchers.IO) {
+                    list = async { postDao.getFromDao() as MutableList<Post> }.await()
+                    saveUploadAnswer(list)
+                }
             }
         })
     }

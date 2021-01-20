@@ -65,4 +65,6 @@ dependencies {
 
     implementation "androidx.room:room-runtime:2.2.6"
     kapt "androidx.room:room-compiler:2.2.6"
+
+    implementation "org.reactivestreams:reactive-streams:1.0.2"
 }

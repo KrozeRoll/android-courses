@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var postList : MutableList<Post>
     private var broadcastReceiver : BroadcastReceiver? = null
     var postAdapter : PostAdapter? = null
+    var currNumber : Int = 0
 
     private fun makeRecycleView(contactsList : MutableList<Post>) {
         val viewManager = LinearLayoutManager(this@MainActivity)
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                     val resultCode = intent.getIntExtra("resultCode", 0)
                     val post = intent.getParcelableExtra<Post>("post")
                     if (resultCode != 0) {
-                        makeToast("API error", this@MainActivity)
+                        makeToast("Server connection problem", this@MainActivity)
                     } else {
                         makeToast("Posted $post", this@MainActivity)
                     }
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 } else if (operation == "upload") {
                     val executed = intent.getBooleanExtra("has_list", false)
                     if (!executed) {
-                        makeToast("Connection problem, try again", this@MainActivity)
+                        makeToast("Server connection problem", this@MainActivity)
                         progressBar.visibility = View.INVISIBLE
                     } else {
                         makeToast("List uploaded", this@MainActivity)
@@ -140,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         addButton.setOnClickListener {
-            val newPost = PostBody("NewPost", "It's a post", 1)
+            val newPost = PostBody("NewPost#${currNumber++}", "It's a post", 1)
             postPost(newPost)
         }
 

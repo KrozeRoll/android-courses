@@ -13,7 +13,7 @@ class MyApp : Application() {
         super.onCreate()
         instance = this
         apiService = APIService.create()
-        dataBase = Room.databaseBuilder(this, AppDatabase::class.java, "database")
+        dataBase = Room.databaseBuilder(this, AppDatabase::class.java, "dataBase")
             .build()
     }
 

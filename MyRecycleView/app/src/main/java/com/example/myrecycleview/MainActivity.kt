@@ -72,7 +72,7 @@ class UserAdapter(
         holder.root.setOnClickListener {
             onClick(contacts[holder.adapterPosition])
         }
-        itemsCopy.addAll(contacts)
+        //itemsCopy.addAll(contacts)
         return holder
 
     }

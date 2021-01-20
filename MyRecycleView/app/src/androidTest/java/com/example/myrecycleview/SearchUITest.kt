@@ -91,18 +91,18 @@ class SearchUITest {
                 isDisplayed()
             )
         )
-        searchAutoComplete2.perform(pressImeActionButton())
-
-        val recyclerView = onView(
-            allOf(
-                withId(R.id.myRecyclerView),
-                childAtPosition(
-                    withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-                    0
-                )
-            )
-        )
-        recyclerView.perform(actionOnItemAtPosition<ViewHolder>(6, click()))
+//        searchAutoComplete2.perform(pressImeActionButton())
+//
+//        val recyclerView = onView(
+//            allOf(
+//                withId(R.id.myRecyclerView),
+//                childAtPosition(
+//                    withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
+//                    0
+//                )
+//            )
+//        )
+//        recyclerView.perform(actionOnItemAtPosition<ViewHolder>(6, click()))
     }
 
     private fun childAtPosition(
