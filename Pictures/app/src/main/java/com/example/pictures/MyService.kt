@@ -7,20 +7,25 @@ import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.os.IBinder
 import android.util.Log
+import android.util.LruCache
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.lang.ref.WeakReference
 import java.net.URL
-import java.util.concurrent.ConcurrentHashMap
 
 class MyService : Service() {
-    private var imageMap = ConcurrentHashMap<String?, ByteArray>()
+    var cacheSize = 4 * 1024 * 1024
+    private var imageCache : LruCache<String?, ByteArray> = LruCache<String?, ByteArray>(cacheSize)
+    //private var imageMap = ConcurrentHashMap<String?, ByteArray>()
 
-    fun makeBroadcast(content : Pair<ByteArray, String>?) {
+    fun makeBroadcast(content: Pair<ByteArray, String>?) {
         val image = content?.first
         val url = content?.second
+
         if (image != null) {
-            imageMap[url] = image
+            synchronized (imageCache) {
+                imageCache.put(url, image);
+            }
             sendBroadcast(Intent().apply {
                 action = "RESPONSE"
                 addCategory(Intent.CATEGORY_DEFAULT)
@@ -59,11 +64,13 @@ class MyService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val url = intent?.extras?.getString("url")
-        if (imageMap.containsKey(url)) {
-            val image = imageMap[url]
-            makeBroadcast(Pair(image!!, url!!))
-        } else {
-            PictureAsyncTask(this).execute(url)
+        synchronized (imageCache) {
+            if (imageCache.get(url) != null) {
+                val image = imageCache.get(url)
+                makeBroadcast(Pair(image!!, url!!))
+            } else {
+                PictureAsyncTask(this).execute(url)
+            }
         }
 
         return START_NOT_STICKY
@@ -74,7 +81,9 @@ class MyService : Service() {
     }
 
     override fun onDestroy() {
-        imageMap.clear()
+        synchronized(imageCache) {
+            imageCache.evictAll()
+        }
         super.onDestroy()
     }
 }
